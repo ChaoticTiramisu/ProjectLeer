@@ -1,0 +1,36 @@
+﻿@page "/vakform/{Id:int?}"
+
+@using ProjectLeer.Entity
+@using ProjectLeer.Services
+@inject VakService VakService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+
+<h3>Vak Form</h3>
+
+@if (Vak != null)
+{
+    <p>Vak Name: @Vak.Naam</p>
+}
+else
+{
+    <p>Loading...</p>
+}
+
+@code {
+    [Parameter] public int? Id { get; set; } // This is where the Id parameter is set
+    private Vak Vak;
+
+    // Called when the component is initialized
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id.HasValue)
+        {
+            Vak = await VakService.GetVakByIdAsync(Id.Value); // Fetch Vak by Id
+        }
+        else
+        {
+            Vak = new Vak(); // If no Id, create a new Vak for adding
+        }
+    }
+}
