@@ -17,6 +17,8 @@ else
     <p>Loading...</p>
 }
 
+<button @onclick="() =>">Vak toevoegen</button>
+
 @code {
     [Parameter] public int? Id { get; set; } // This is where the Id parameter is set
     private Vak Vak;
@@ -33,4 +35,6 @@ else
             Vak = new Vak(); // If no Id, create a new Vak for adding
         }
     }
+
+
 }
