@@ -8,33 +8,61 @@
 
 <h3>Vak Form</h3>
 
-@if (Vak != null)
-{
-    <p>Vak Name: @Vak.Naam</p>
-}
-else
+@if (IsLoading)
 {
     <p>Loading...</p>
 }
-
-<button @onclick="() =>">Vak toevoegen</button>
+else if (Vak != null)
+{
+    <p>Vak Name: @Vak.Naam</p>
+    <button @onclick="HandleAddVak">Vak toevoegen</button>
+}
+else
+{
+    <p>Something went wrong while loading the Vak.</p>
+}
 
 @code {
-    [Parameter] public int? Id { get; set; } // This is where the Id parameter is set
+    [Parameter] public int? Id { get; set; }
     private Vak Vak;
+    private bool IsLoading = true;
 
-    // Called when the component is initialized
     protected override async Task OnInitializedAsync()
     {
-        if (Id.HasValue)
+        try
         {
-            Vak = await VakService.GetVakByIdAsync(Id.Value); // Fetch Vak by Id
+            if (Id.HasValue)
+            {
+                Vak = await VakService.GetVakByIdAsync(Id.Value);
+            }
+            else
+            {
+                Vak = new Vak();
+            }
         }
-        else
+        catch (Exception ex)
         {
-            Vak = new Vak(); // If no Id, create a new Vak for adding
+            Console.WriteLine($"Error loading Vak: {ex.Message}");
+        }
+        finally
+        {
+            IsLoading = false; // Ensure loading state ends even on error
         }
     }
 
+    private async Task HandleAddVak()
+    {
+        try
+        {
+            await VakService.AddVakAsync(Vak); // Save Vak
+            await JS.InvokeVoidAsync("alert", "Vak has been added successfully!");
 
+            // Navigate to a different page or refresh the current page
+            NavigationManager.NavigateTo("/vaklist");
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"Failed to add Vak: {ex.Message}");
+        }
+    }
 }
