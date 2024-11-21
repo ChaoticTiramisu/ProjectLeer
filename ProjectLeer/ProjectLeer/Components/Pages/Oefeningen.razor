@@ -1,0 +1,78 @@
+﻿@page "/oefeningen"
+@rendermode InteractiveServer
+
+<h3>Oefeningen</h3>
+
+@foreach (var oef in OefeningenLijst)
+{
+    <div class="oefening-container">
+        <h4>@oef.Vraag</h4>
+        <InputText @bind-Value="oef.IngegevenAntwoord" placeholder="Typ hier het antwoord..." />
+        <button @onclick="() => ControleerOefening(oef)">Controleer</button>
+        @if (oef.Resultaat is not null)
+        {
+            <p>@oef.Resultaat</p>
+        }
+    </div>
+}
+
+<div class="nieuw-container">
+    <h4>Nieuwe oefening toevoegen</h4>
+    <InputText @bind-Value="NieuweVraag" placeholder="Typ hier de nieuwe vraag..." />
+    <InputText @bind-Value="NieuwAntwoord" placeholder="Typ hier het juiste antwoord..." />
+    <button @onclick="NieuweOefening">Voeg toe</button>
+</div>
+
+@code {
+    // Klasse om een oefening te beheren
+    private class OefeningItem
+    {
+        public string Vraag { get; set; } = string.Empty; // Vraagtekst
+        public string CorrectAntwoord { get; set; } = string.Empty; // Correct antwoord
+        public string? IngegevenAntwoord { get; set; } // Antwoord van de gebruiker
+        public string? Resultaat { get; set; } // Resultaat van de controle
+    }
+
+    // Lijst van oefeningen
+    private List<OefeningItem> OefeningenLijst { get; set; } = new List<OefeningItem>
+    {
+        new OefeningItem { Vraag = "Wie heeft de achternaam Desmet in de klas?", CorrectAntwoord = "Augustin" },
+        new OefeningItem { Vraag = "Wie heeft de achternaam Bellinck in de klas?", CorrectAntwoord = "Cairo" },
+        new OefeningItem { Vraag = "Wie heeft de achternaam Cuvelier in de klas?", CorrectAntwoord = "Arno" }
+    };
+
+    // Velden voor een nieuwe oefening
+    private string NieuweVraag { get; set; } = string.Empty;
+    private string NieuwAntwoord { get; set; } = string.Empty;
+
+    // Functie om een oefening te controleren
+    private void ControleerOefening(OefeningItem oef)
+    {
+        if (oef.IngegevenAntwoord?.Equals(oef.CorrectAntwoord, StringComparison.OrdinalIgnoreCase) == true)
+        {
+            oef.Resultaat = "Correct!";
+        }
+        else
+        {
+            oef.Resultaat = "Fout! Probeer het opnieuw.";
+        }
+    }
+
+    // Functie om een nieuwe oefening toe te voegen
+    private void NieuweOefening()
+    {
+        if (!string.IsNullOrWhiteSpace(NieuweVraag) && !string.IsNullOrWhiteSpace(NieuwAntwoord))
+        {
+            OefeningenLijst.Add(new OefeningItem
+                {
+                    Vraag = NieuweVraag,
+                    CorrectAntwoord = NieuwAntwoord
+                });
+
+            // Reset inputvelden
+            NieuweVraag = string.Empty;
+            NieuwAntwoord = string.Empty;
+        }
+    }
+}
+ 
