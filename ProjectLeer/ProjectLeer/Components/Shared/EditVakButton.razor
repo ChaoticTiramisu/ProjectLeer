@@ -1,0 +1,13 @@
+﻿@inject NavigationManager NavigationManager
+<button @onclick=EditVak>Edit vak</button>
+
+
+@code {
+    [Parameter]
+    public int? id { get; set; }
+
+    void EditVak()
+    {
+        NavigationManager.NavigateTo($"/editvak/{id}");
+    }
+}
