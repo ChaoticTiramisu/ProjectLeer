@@ -1,64 +1,32 @@
 ﻿@page "/vakken"
-@using ProjectLeer.Entity
-@using ProjectLeer.Services
-@inject VakService VakService
-@inject NavigationManager NavigationManager
-@inject IJSRuntime JS
+@inject IVakService VakService
+@attribute [StreamRendering]
+<h3>VakList</h3>
 
-<h3>Vakken List</h3>
-
-@if (vakken == null)
+@if(vakken == null)
+    {
+       <span> Laden....</span>
+    }
+ else if(vakken.Count() == 0)
 {
-    <p>Loading...</p>
-}
-else if (vakken.Count == 0)
-{
-    <p>No Vakken available.</p>
+    <span> Er zijn geen vakken beschikbaar.</span>
 }
 else
 {
     <ul>
-        @foreach (var vak in vakken)
+        @foreach(var vak in vakken)
         {
-            <li>
-                @vak.Naam
-                <button @onclick="() => EditVak(vak.Id)">Edit</button>
-                <button @onclick="() => DeleteVak(vak.Id)">Delete</button>
-            </li>
+            <li>@vak.Naam</li>
         }
     </ul>
-    <button @onclick="CreateNewVak">Add New Vak</button>
 }
 
 @code {
-    private List<Vak> vakken;
+    List<Vak> vakken = new List<Vak>();
 
-    // Called when the component is initialized
     protected override async Task OnInitializedAsync()
     {
-        vakken = await VakService.GetAllVakkenAsync();
-    }
+        vakken = await VakService.GetAllVakken();
 
-    // Method to delete a Vak
-    private async Task DeleteVak(int id)
-    {
-        var confirmDelete = await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete this Vak?");
-        if (confirmDelete)
-        {
-            await VakService.DeleteVakAsync(id); // Delete the Vak from the database
-            vakken = await VakService.GetAllVakkenAsync(); // Refresh the list
-        }
-    }
-
-    // Redirect to the Edit page
-    private void EditVak(int id)
-    {
-        NavigationManager.NavigateTo($"/vakform/{id}");
-    }
-
-    // Redirect to the Create New page
-    private void CreateNewVak()
-    {
-        NavigationManager.NavigateTo("/vakform");
     }
 }

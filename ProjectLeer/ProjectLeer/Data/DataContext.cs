@@ -4,10 +4,11 @@ using ProjectLeer.Entity;
 
 namespace ProjectLeer.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class DataContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
+
         }
 
         public DbSet<Vak> Vakken { get; set; }
