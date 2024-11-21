@@ -1,53 +1,23 @@
-﻿using ProjectLeer.Data;
-using ProjectLeer.Entity;
+﻿
+using ProjectLeer.Data;
 using Microsoft.EntityFrameworkCore;
-
+using ProjectLeer.Entity;
 namespace ProjectLeer.Services
 {
-public class VakService
-{
-    private readonly ApplicationDbContext _context;
-
-    public VakService(ApplicationDbContext context)
+    public class VakService : IVakService
     {
-        _context = context;
-    }
+        private readonly DataContext _context;
 
-    // Create
-    public async Task AddVakAsync(Vak vak)
-    {
-        _context.Vakken.Add(vak);
-        await _context.SaveChangesAsync();
-    }
-
-    // Read
-    public async Task<List<Vak>> GetAllVakkenAsync()
-    {
-        return await _context.Vakken.ToListAsync();
-    }
-
-    public async Task<Vak> GetVakByIdAsync(int id)
-    {
-        return await _context.Vakken.FindAsync(id);
-    }
-
-    // Update
-    public async Task UpdateVakAsync(Vak vak)
-    {
-        _context.Vakken.Update(vak);
-        await _context.SaveChangesAsync();
-    }
-
-    // Delete
-    public async Task DeleteVakAsync(int id)
-    {
-        var vak = await _context.Vakken.FindAsync(id);
-        if (vak != null)
+        public VakService(DataContext context)
         {
-            _context.Vakken.Remove(vak);
-            await _context.SaveChangesAsync();
+            _context = context;
+        }
+
+        public async Task<List<Vak>> GetAllVakken()
+        {
+            var vakken = await _context.Vakken.ToListAsync();
+            return vakken;
         }
     }
-}
 }
 
