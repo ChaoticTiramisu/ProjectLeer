@@ -1,0 +1,85 @@
+﻿<!--
+Route naar de webpagina voor de oefeningen,
+Interactiveserver, zorgt ervor dat de webpagina zichzelf zal refreshen als er op controleer wordt geklikt
+-->
+@page "/oefeningen"
+@rendermode InteractiveServer
+
+<h3>Oefeningen</h3>
+<!--
+DIT IS VOOR ELKE OEFENING HETZELFDE
+inputtext @bind-value="oefantwoord, zorgt ervoor dat de gebruiker kan ingeven op de website en dat het ingegeven
+woord wordt toegekend aan oefeningantwoord en zich aanpast als er ook een nieuw woord word geprobeerd
+
+placeholder, zorgt dat gebruiker weet waar hij moet typen en het verdwijnt zodra de gebruiker iets invoert
+
+button @onclick zorgt ervoor dat hij het meteen uitvoert zodra de knop is ingedrukt, nadien start hij de functie
+controleeroefening met de waarde van het ingegeven woord van de gebruiker en ook het juiste antwoord en zal nadien
+het resultaat van de functie printen op de pagina
+-->
+<div>
+    <h4>Oefening 1</h4>
+    <h6>Wie heeft de achternaam Desmet in de klas</h6>
+    <InputText @bind-Value="Oefening1Antwoord" placeholder="Typ hier het woord..." />
+    <button @onclick="() => ControleerOefening(Oefening1Antwoord, CorrectAntwoord1, result => Oefening1Resultaat = result)">Controleer</button>
+    @if (Oefening1Resultaat is not null)
+    {
+        <p>@Oefening1Resultaat</p>
+    }
+</div>
+
+<div>
+    <h4>Oefening 2</h4>
+    <h6>Wie heeft de achternaam Bellinck in de klas</h6>
+    <InputText @bind-Value="Oefening2Antwoord" placeholder="Typ hier het woord..." />
+    <button @onclick="() => ControleerOefening(Oefening2Antwoord, CorrectAntwoord2, result => Oefening2Resultaat = result)">Controleer</button>
+    @if (Oefening2Resultaat is not null)
+    {
+        <p>@Oefening2Resultaat</p>
+    }
+</div>
+
+<div>
+    <h4>Oefening 3</h4>
+    <h6>Wie heeft de achternaam Cuvelier in de klas</h6>
+    <InputText @bind-Value="Oefening3Antwoord" placeholder="Typ hier het woord..." />
+    <button @onclick="() => ControleerOefening(Oefening3Antwoord, CorrectAntwoord3, result => Oefening3Resultaat = result)">Controleer</button>
+    @if (Oefening3Resultaat is not null)
+    {
+        <p>@Oefening3Resultaat</p>
+    }
+</div>
+
+@code {
+    // Antwoorden ingevoerd door de gebruiker
+    private string Oefening1Antwoord { get; set; } = string.Empty;
+    private string Oefening2Antwoord { get; set; } = string.Empty;
+    private string Oefening3Antwoord { get; set; } = string.Empty;
+
+    // Resultaten van de controles
+    private string? Oefening1Resultaat { get; set; }
+    private string? Oefening2Resultaat { get; set; }
+    private string? Oefening3Resultaat { get; set; }
+
+    // Correcte antwoorden
+    private const string CorrectAntwoord1 = "Augustin";
+    private const string CorrectAntwoord2 = "Cairo";
+    private const string CorrectAntwoord3 = "Arno";
+
+    // hier wordt de functie controleeroefening gemaakt, met de waardes die automatisch worden ingegeven
+    //het resultaat wordt ook als een string weergegeven
+    private void ControleerOefening(string gegevenAntwoord, string correctAntwoord, Action<string> setResult)
+    {
+        //Controle als het antwoord en het ingegeven woord hetzelfde zijn, de hoofdletters etc maken niet uit
+        if (gegevenAntwoord.Equals(correctAntwoord, StringComparison.OrdinalIgnoreCase))
+        {
+            // antwoord is correct
+            setResult("Correct!");
+        }
+        else
+        {
+            // antwoord is fout
+            setResult("Fout! Probeer het opnieuw.");
+        }
+    }
+}
