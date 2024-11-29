@@ -9,7 +9,7 @@
         <h4>@oef.Vraag</h4>
         <InputText @bind-Value="oef.IngegevenAntwoord" placeholder="Typ hier het antwoord..." />
         <button @onclick="() => ControleerOefening(oef)">Controleer</button>
-        @if (oef.Resultaat is not null)
+        @if (oef.Resultaat != null)
         {
             <p>@oef.Resultaat</p>
         }
