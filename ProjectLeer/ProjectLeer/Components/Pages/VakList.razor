@@ -1,6 +1,7 @@
 ﻿@page "/vakken"
 @inject IVakService VakService
 @attribute [StreamRendering]
+@rendermode InteractiveServer
 <h3>VakList</h3>
 
 @if(vakken == null)
@@ -16,10 +17,12 @@ else
     <ul>
         @foreach(var vak in vakken)
         {
-            <li>@vak.Naam</li>
+            <li>@vak.Naam <EditVakButton id="vak.Id" /> </li>
         }
     </ul>
 }
+<CreateVakButton></CreateVakButton>
+
 
 @code {
     List<Vak> vakken = new List<Vak>();
@@ -29,4 +32,6 @@ else
         vakken = await VakService.GetAllVakken();
 
     }
+
+    
 }

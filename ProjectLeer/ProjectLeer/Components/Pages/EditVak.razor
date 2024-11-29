@@ -1,5 +1,60 @@
-﻿<h3>EditVak</h3>
+﻿@page "/editvak"
+@page "/editvak/{id:int?}"
+@inject IVakService VakService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<h3>Edit Vak</h3>
+<EditForm Model="vak" OnSubmit="HandleSubmit" FormName="EditVak">
+    <label>Naam</label>
+    <InputText @bind-Value="vak.Naam" />
+    <button type="submit">Submit</button>
+    @if (id.HasValue)
+    {
+        <button @onclick="DeleteVak" type="button">Delete</button>
+    }
+</EditForm>
 
 @code {
+    [Parameter]
+    public int? id { get; set; }
 
+    Vak vak { get; set; } = new Vak { Naam = string.Empty };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (id.HasValue)
+        {
+            vak = await VakService.GetVakById(id.Value);
+        }
+        else
+        {
+            vak = new Vak { Naam = string.Empty };
+        }
+    }
+
+    async Task HandleSubmit()
+    {
+        if (id == null)
+        {
+            await VakService.AddVak(vak);
+        }
+        else
+        {
+            await VakService.EditVak(id.Value, vak);
+
+        }
+        NavigationManager.NavigateTo("/vakken");
+
+
+    }
+
+    async Task DeleteVak()
+    {
+        if (id.HasValue)
+        {
+            await VakService.DeleteVak(id.Value);
+            NavigationManager.NavigateTo("/vakken");
+        }
+    }
 }
