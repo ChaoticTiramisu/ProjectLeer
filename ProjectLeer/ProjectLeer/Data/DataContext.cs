@@ -12,5 +12,16 @@ namespace ProjectLeer.Data
         }
 
         public DbSet<Vak> Vakken { get; set; }
+        public DbSet<Leerling> Leerlingen { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Configure the many-to-many relationship
+            modelBuilder.Entity<Leerling>()
+                .HasMany(leerling => leerling.Vakken)
+                .WithMany(); 
+        }
     }
 }

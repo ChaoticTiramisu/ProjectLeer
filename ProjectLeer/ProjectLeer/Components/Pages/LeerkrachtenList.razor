@@ -2,20 +2,20 @@
 @inject IVakService VakService
 @attribute [StreamRendering]
 @rendermode InteractiveServer
-<h3>VakList</h3>
+<h3>LeerkrachtList</h3>
 
-@if(vakken == null)
-    {
-       <span> Laden....</span>
-    }
- else if(vakken.Count() == 0)
+@if (leerkrachten == null)
+{
+    <span> Laden....</span>
+}
+else if (vakken.Count() == 0)
 {
     <span> Er zijn geen vakken beschikbaar.</span>
 }
 else
 {
     <ul>
-        @foreach(var vak in vakken)
+        @foreach (var vak in vakken)
         {
             <li>@vak.Naam <EditItemButton id="vak.Id" route="EditVak" /> </li>
         }
@@ -33,5 +33,5 @@ else
 
     }
 
-    
+
 }

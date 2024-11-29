@@ -1,8 +1,10 @@
 ﻿@inject NavigationManager NavigationManager
 <button @onclick=CreateVak>Create vak</button>
 @code {
+   [Parameter]
+    public string? route { get; set; }
     void CreateVak()
     {
-        NavigationManager.NavigateTo("/editvak");
+        NavigationManager.NavigateTo($"/{route}");
     }
 }
