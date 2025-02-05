@@ -1,60 +1,129 @@
 ﻿@page "/editvak"
-@page "/editvak/{id:int?}"
+@page "/editvak/{Id:int?}"
 @inject IVakService VakService
 @inject NavigationManager NavigationManager
+@inject ILogger<EditVak> Logger
 @rendermode InteractiveServer
 
-<h3>Edit Vak</h3>
-<EditForm Model="vak" OnSubmit="HandleSubmit" FormName="EditVak">
-    <label>Naam</label>
-    <InputText @bind-Value="vak.Naam" />
-    <button type="submit">Submit</button>
-    @if (id.HasValue)
+<h3>@PageTitle</h3>
+
+<EditForm Model="@Vak" OnValidSubmit="@HandleSubmit" FormName="EditVak">
+    <DataAnnotationsValidator />
+    <ValidationSummary class="text-danger" />
+
+    <div class="form-group mb-3">
+        <label for="naam" class="form-label">Subject Name:</label>
+        <InputText id="naam" @bind-Value="@Vak.Naam" class="form-control" />
+        <ValidationMessage For="@(() => Vak.Naam)" class="text-danger" />
+    </div>
+
+    <div class="button-group">
+        <button type="submit" class="btn btn-primary me-2" disabled="@IsProcessing">
+            @SubmitButtonText
+        </button>
+
+        @if (Id.HasValue)
+        {
+            <button type="button"
+                    class="btn btn-danger me-2"
+                    onclick="@DeleteVak"
+                    disabled="@IsProcessing">
+                Delete
+            </button>
+        }
+
+        <a href="/vakken" class="btn btn-secondary">Back to List</a>
+    </div>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
     {
-        <button @onclick="DeleteVak" type="button">Delete</button>
+        <div class="alert alert-danger mt-3">@ErrorMessage</div>
     }
 </EditForm>
 
 @code {
+    @inject IJSRuntime JSRuntime
     [Parameter]
-    public int? id { get; set; }
+    public int? Id { get; set; }
 
-    Vak vak { get; set; } = new Vak { Naam = string.Empty };
+    private Vak Vak { get; set; } = new();
+    private string ErrorMessage { get; set; } = string.Empty;
+    private bool IsProcessing { get; set; }
+    private string PageTitle => Id.HasValue ? "Edit Subject" : "Create New Subject";
+    private string SubmitButtonText => Id.HasValue ? "Save Changes" : "Create Subject";
 
     protected override async Task OnParametersSetAsync()
     {
-        if (id.HasValue)
+        try
         {
-            vak = await VakService.GetVakById(id.Value);
+            if (Id.HasValue)
+            {
+                Vak = await VakService.GetVakById(Id.Value) ?? new Vak();
+                if (Vak.Id == 0)
+                {
+                    NavigationManager.NavigateTo("/vakken");
+                }
+            }
         }
-        else
+        catch (Exception ex)
         {
-            vak = new Vak { Naam = string.Empty };
+            Logger.LogError(ex, "Error loading subject");
+            ErrorMessage = "Failed to load subject data";
         }
     }
 
-    async Task HandleSubmit()
+    private async Task HandleSubmit()
     {
-        if (id == null)
+        try
         {
-            await VakService.AddVak(vak);
-        }
-        else
-        {
-            await VakService.EditVak(id.Value, vak);
+            IsProcessing = true;
+            ErrorMessage = string.Empty;
 
-        }
-        NavigationManager.NavigateTo("/vakken");
+            if (Id.HasValue)
+            {
+                await VakService.EditVak(Id.Value, Vak);
+            }
+            else
+            {
+                await VakService.AddVak(Vak);
+            }
 
-
-    }
-
-    async Task DeleteVak()
-    {
-        if (id.HasValue)
-        {
-            await VakService.DeleteVak(id.Value);
             NavigationManager.NavigateTo("/vakken");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error saving subject");
+            ErrorMessage = "Failed to save changes. Please try again.";
+        }
+        finally
+        {
+            IsProcessing = false;
+        }
+    }
+
+    private async Task DeleteVak()
+    {
+        if (!Id.HasValue) return;
+
+        if (!await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this subject?"))
+            return;
+
+        try
+        {
+            IsProcessing = true;
+            ErrorMessage = string.Empty;
+
+            await VakService.DeleteVak(Id.Value);
+            NavigationManager.NavigateTo("/vakken", forceLoad: true);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error deleting subject");
+            ErrorMessage = "Failed to delete subject. Please try again.";
+        }
+        finally
+        {
+            IsProcessing = false;
         }
     }
 }

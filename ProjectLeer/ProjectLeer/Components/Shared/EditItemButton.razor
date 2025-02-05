@@ -1,10 +1,11 @@
 ﻿@inject NavigationManager NavigationManager
-<button @onclick=EditVak>Edit vak</button>
-
+<button @onclick="EditVak">Edit vak</button>
 
 @code {
     [Parameter]
     public int? id { get; set; }
+
+    [Parameter]   
     public string? route { get; set; }
 
     void EditVak()
@@ -12,3 +13,4 @@
         NavigationManager.NavigateTo($"/{route}/{id}");
     }
 }
+

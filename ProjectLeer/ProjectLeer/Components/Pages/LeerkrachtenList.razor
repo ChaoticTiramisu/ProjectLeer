@@ -1,5 +1,5 @@
-﻿@page "/vakken"
-@inject IVakService VakService
+﻿@page "/leerkrachten"
+@inject ILeerkrachtService LeerkrachtService
 @attribute [StreamRendering]
 @rendermode InteractiveServer
 <h3>LeerkrachtList</h3>
@@ -8,16 +8,16 @@
 {
     <span> Laden....</span>
 }
-else if (vakken.Count() == 0)
+else if (leerkrachten.Count() == 0)
 {
     <span> Er zijn geen vakken beschikbaar.</span>
 }
 else
 {
     <ul>
-        @foreach (var vak in vakken)
+        @foreach (var leerkracht in leerkrachten)
         {
-            <li>@vak.Naam <EditItemButton id="vak.Id" route="EditVak" /> </li>
+            <li>@leerkracht.Naam <EditItemButton id="leerkracht.Id" route="EditVak" /> </li>
         }
     </ul>
 }
@@ -25,11 +25,11 @@ else
 
 
 @code {
-    List<Vak> vakken = new List<Vak>();
+    List<Leerkracht> leerkrachten = new List<Leerkracht>();
 
     protected override async Task OnInitializedAsync()
     {
-        vakken = await VakService.GetAllVakken();
+        leerkrachten = await LeerkrachtService.GetAllLeerkrachten();
 
     }
 

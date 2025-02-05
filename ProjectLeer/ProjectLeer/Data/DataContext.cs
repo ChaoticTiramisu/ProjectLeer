@@ -12,6 +12,8 @@ namespace ProjectLeer.Data
         }
 
         public DbSet<Vak> Vakken { get; set; }
+        public DbSet<Leerkracht> Leerkrachten { get; set; }
+
         public DbSet<Leerling> Leerlingen { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
